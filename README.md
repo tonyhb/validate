@@ -7,7 +7,7 @@ Validation for Go structs using Tags. Use as follows:
 		UUID   string `validate:"NotEmpty,UUID"`
 		URL    string `validate:"NotEmpty,URL"`
 		Author string `validate:"Email"`
-		Slug   string `validate:"minLength:5"
+		Slug   string `validate:"MinLength:5"
 	}
 
 Really simple definitions. To validate, use the exported methods:
@@ -45,7 +45,10 @@ Validating a subset of fields:
 You can add custom validators to the validation library without
 extending/modifying it:
 
-	import "validate"
+	import (
+		"reflect"
+		validate "github.com/tonyhb/go-checker"
+	)
 
 	func IsAwesome(v *validate.Validator) bool {
 		typ := reflect.TypeOf(v.Data)
