@@ -1,4 +1,4 @@
-Go Checker
+Govalidate
 =========
 
 Validation for Go structs using Tags. Use as follows:
