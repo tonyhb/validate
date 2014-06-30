@@ -47,7 +47,7 @@ extending/modifying it:
 
 	import (
 		"reflect"
-		validate "github.com/tonyhb/go-checker"
+		validate "github.com/tonyhb/govalidate"
 	)
 
 	func IsAwesome(v *validate.Validator) bool {
