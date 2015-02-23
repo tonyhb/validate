@@ -17,12 +17,14 @@ type ValidationData struct {
 	Value interface{}
 
 	// Arguments from the validation tags. For example, in the following
-	// definition Args will will contain a single "5" int:
+	// definition Args will will contain a single "5":
 	//
 	// struct {
 	//     Age `validate:"GreaterThan:5"`
 	// }
-	Args []interface{}
+	//
+	// Unfortunately, due to the nature of tags these will always be strings.
+	Args []string
 }
 
 // All validation methods must return an ErrInvalid error type if the data

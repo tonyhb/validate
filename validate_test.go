@@ -417,3 +417,39 @@ func TestValidateURL(t *testing.T) {
 	}
 
 }
+
+func TestValidateRegexp(t *testing.T) {
+	var invalid = []interface{}{
+		1,
+		'a',
+		"0aaa0",
+	}
+	var valid = []interface{}{
+		"aaaaa0",
+		"aaa123456789",
+	}
+
+	object := struct {
+		Data interface{} `validate:"MinLength:1, Regexp:/^[a-zA-Z]{3,5}[0-9]+$/, NotEmpty"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid regexp to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
+		}
+	}
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid regexp value: %s", err.Error())
+		}
+	}
+
+}

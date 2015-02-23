@@ -2,6 +2,7 @@ package maxlength
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/tonyhb/govalidate/helper"
 	"github.com/tonyhb/govalidate/rules"
@@ -28,9 +29,13 @@ func MaxLength(data rules.ValidationData) error {
 	}
 
 	// Typecast our argument and test
-	if max, ok := data.Args[0].(int); !ok {
-		return fmt.Errorf("Expected an int in validation struct argument, got %T", data.Args[0])
-	} else if len(v) > max {
+	var max int
+	if max, err = strconv.Atoi(data.Args[0]); err != nil {
+		return err
+	}
+	// Typecast our argument and test
+
+	if len(v) > max {
 		return rules.ErrInvalid{
 			ValidationData: data,
 			Failure:        fmt.Sprintf("is too long; it must be at most %d characters long", max),

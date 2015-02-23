@@ -2,6 +2,7 @@ package greaterthan
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/tonyhb/govalidate/helper"
 	"github.com/tonyhb/govalidate/rules"
@@ -30,9 +31,12 @@ func GreaterThan(data rules.ValidationData) error {
 	}
 
 	// Typecast our argument and test
-	if min, ok := data.Args[0].(int); !ok {
-		return fmt.Errorf("Expected an int in validation struct argument, got %T", data.Args[0])
-	} else if v < float64(min) {
+	var min float64
+	if min, err = strconv.ParseFloat(data.Args[0], 64); err != nil {
+		return err
+	}
+
+	if v < min {
 		return rules.ErrInvalid{
 			ValidationData: data,
 			Failure:        fmt.Sprintf("must be greater than %d", min),

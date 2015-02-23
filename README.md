@@ -6,15 +6,16 @@ goodness.
 
 ## Basic usage
 
+Here's how to set up your struct:
+
 ```go
 type Page struct {
 	UUID   string `validate:"NotEmpty,UUID"`
 	URL    string `validate:"NotEmpty,URL"`
 	Author string `validate:"Email"`
-	Slug   string `validate:"MinLength:5, MaxLength:100"`
+	Slug   string `validate:"Regexp:/^[\w-]+$/, MinLength:5, MaxLength:100"`
 }
 ```
-
 Really simple definitions. To validate, use the exported methods:
 
 ```go
@@ -44,6 +45,7 @@ if err := validate.Run(page, "Slug", "Author"); err != nil {
 All validatiors are available in their own package within `rules`. These are
 built in:
 
+- `Regexp:/{regexp}/` - passes if a string matches the given regexp
 - `Alpha` - passes if a string contains only alphabetic characters
 - `Alphanumeric` - passes if a string contains only alphanumeric characters
 - `Email` - passes if the field is a string with a valid email address

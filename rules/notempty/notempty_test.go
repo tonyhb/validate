@@ -24,14 +24,14 @@ func TestNotEmpty(t *testing.T) {
 
 	for _, v := range invalid {
 		object.Value = v
-		if ok, _ := NotEmpty(object); ok {
-			t.Errorf("Expected NotEmpty to return false")
+		if err := NotEmpty(object); err == nil {
+			t.Errorf("Expected error with invalid values")
 		}
 	}
 
 	object.Value = "valid"
-	if ok, _ := NotEmpty(object); !ok {
-		t.Errorf("Expected NotEmpty to return true")
+	if err := NotEmpty(object); err != nil {
+		t.Errorf("Unexpected error with valid values")
 	}
 
 }

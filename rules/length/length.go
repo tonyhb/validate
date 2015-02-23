@@ -2,6 +2,7 @@ package length
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/tonyhb/govalidate/helper"
 	"github.com/tonyhb/govalidate/rules"
@@ -27,9 +28,12 @@ func Length(data rules.ValidationData) error {
 	}
 
 	// Typecast our argument and test
-	if length, ok := data.Args[0].(int); !ok {
-		return fmt.Errorf("Expected an int in validation struct argument, got %T", data.Args[0])
-	} else if len(v) != length {
+	var length int
+	if length, err = strconv.Atoi(data.Args[0]); err != nil {
+		return err
+	}
+
+	if len(v) != length {
 		return rules.ErrInvalid{
 			ValidationData: data,
 			Failure:        fmt.Sprintf("must be %d characters long", length),
