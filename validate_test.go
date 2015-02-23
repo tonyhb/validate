@@ -3,6 +3,8 @@ package validate
 import (
 	"testing"
 	"time"
+
+	"github.com/tonyhb/govalidate/rules"
 )
 
 func TestNotEmpty(t *testing.T) {
@@ -16,19 +18,26 @@ func TestNotEmpty(t *testing.T) {
 		'a',
 		"",
 	}
-	var valid = []interface{}{
-		"test",
-	}
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.NotEmpty() != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"NotEmpty"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid NotEmpty values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	object.Data = "valid"
+	if err := Run(object); err != nil {
+		t.Errorf("Unexpected error with valid field: %s", err.Error())
+	}
 }
 
 func TestNotZero(t *testing.T) {
@@ -47,16 +56,29 @@ func TestNotZero(t *testing.T) {
 		1,
 		0.5,
 	}
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.NotZero() != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"NotZero"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid NotZero values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid NotZero value")
+		}
+	}
 }
 
 func TestEmail(t *testing.T) {
@@ -78,16 +100,29 @@ func TestEmail(t *testing.T) {
 		"test@example.org.uk",
 		"test@example.ru",
 	}
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.Email() != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"Email"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid Email values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid Email value")
+		}
+	}
 }
 
 func TestMinLength(t *testing.T) {
@@ -105,17 +140,29 @@ func TestMinLength(t *testing.T) {
 		"aa",
 		"test",
 	}
-	var length = 2
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.MinLength(length) != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"MinLength:2"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid MinLength:2 values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid MinLength:2 value")
+		}
+	}
 }
 
 func TestMaxLength(t *testing.T) {
@@ -132,17 +179,29 @@ func TestMaxLength(t *testing.T) {
 	var valid = []interface{}{
 		"t",
 	}
-	var length = 2
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.MaxLength(length) != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"MaxLength:2"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid MaxLength:2 values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid MaxLength:2 value")
+		}
+	}
 }
 
 func TestLength(t *testing.T) {
@@ -160,17 +219,29 @@ func TestLength(t *testing.T) {
 	var valid = []interface{}{
 		"test",
 	}
-	var length = 4
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.Length(length) != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"Length:4"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid Length:4 values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid Length:4 value")
+		}
+	}
 }
 
 func TestGreaterThan(t *testing.T) {
@@ -180,24 +251,38 @@ func TestGreaterThan(t *testing.T) {
 		1.5,
 		int16(2),
 		float64(1.25),
+		49.99,
 	}
 	var valid = []interface{}{
 		int64(100),
 		float32(192.123),
 		12311,
 		123.6,
+		50,
 	}
-	var greaterThan = 50 // Ensure all valid items are greater than this number.
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.GreaterThan(greaterThan) != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"GreaterThan:50"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid GreaterThan:50 values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid GreaterThan:50 value")
+		}
+	}
 }
 
 func TestValidateUUID(t *testing.T) {
@@ -215,21 +300,34 @@ func TestValidateUUID(t *testing.T) {
 		"foobar",
 		"E55A815A-BA16-4FB9-AE01-644204CC433A", // Uppercase V4 - invalid hex digits
 	}
-
 	var valid = []interface{}{
 		"fb623672-40dd-11e3-91ea-ce3f5508acd9", // V1
 		"8563d95d-efb0-4e87-95d8-1d6c5debf298", // V4
 	}
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.UUID() != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"UUID"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid UUID values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid UUID value")
+		}
+	}
+
 }
 
 func TestValidateNotZeroTime(t *testing.T) {
@@ -244,25 +342,36 @@ func TestValidateNotZeroTime(t *testing.T) {
 		[]rune("test"),
 		'a',
 		"t",
-		"foobar",
-		"E55A815A-BA16-4FB9-AE01-644204CC433A", // Uppercase V4 - invalid hex digits
 		time.Time{},
 	}
-
 	var valid = []interface{}{
 		time.Date(1984, 1, 1, 12, 00, 00, 00, time.UTC),
 		time.Now(),
 	}
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.NotZeroTime() != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"NotZeroTime"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid NotZeroTime values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid NotZeroTime value")
+		}
+	}
+
 }
 
 func TestValidateURL(t *testing.T) {
@@ -283,14 +392,28 @@ func TestValidateURL(t *testing.T) {
 		"HTTP://example.com/",
 		"https://www.example.com/index.html",
 	}
-	doTest := func (slice []interface{}, expected bool, t *testing.T) {
-		for _, v := range slice {
-			validator := &Validator{Data: v}
-			if validator.URL() != expected {
-				t.Errorf("Test failed for %v", v)
-			}
+
+	object := struct {
+		Data interface{} `validate:"URL"`
+	}{}
+
+	for _, v := range invalid {
+		object.Data = v
+		err := Run(object)
+		if err == nil {
+			t.Errorf("Expected invalid URL values to fail validation")
+		}
+		if _, ok := err.(rules.ErrNoValidationMethod); ok {
+			t.Errorf(err.Error())
 		}
 	}
-	doTest(invalid, false, t)
-	doTest(valid, true, t)
+
+	for _, v := range valid {
+		object.Data = v
+		err := Run(object)
+		if err != nil {
+			t.Errorf("Unexpected error with valid URL value")
+		}
+	}
+
 }

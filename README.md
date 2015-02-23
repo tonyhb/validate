@@ -1,80 +1,105 @@
 Govalidate
 =========
 
-Validation for Go structs using Tags. Use as follows:
+Simple, fast and *extensible* validation for Go structs, using tags in all their
+goodness.
 
-	type Page struct {
-		UUID   string `validate:"NotEmpty,UUID"`
-		URL    string `validate:"NotEmpty,URL"`
-		Author string `validate:"Email"`
-		Slug   string `validate:"MinLength:5"
-	}
+## Basic usage
+
+```go
+type Page struct {
+	UUID   string `validate:"NotEmpty,UUID"`
+	URL    string `validate:"NotEmpty,URL"`
+	Author string `validate:"Email"`
+	Slug   string `validate:"MinLength:5, MaxLength:100"`
+}
+```
 
 Really simple definitions. To validate, use the exported methods:
 
-	if pass, err := validate.run(page); pass != true {
-		// err is of type validate.ValidateErrors - a slice of strings
-		// Print all errors as a single string
-		fmt.Printf(err.Stringify())
-	}
+```go
+if err := validate.Run(page); err != nil {
+	// err is of type validate.ValidateErrors which contains a slice of
+	// validation errors for all failures.
+	fmt.Printf(err.Error())
+}
+```
 
 Validating a subset of fields:
 
-	if pass, err := validate.run(page, "URL"); pass != true {
-		// Only the URL was Slug and Author was validated
-	}
+```go
+// Only validate the URL
+if err := validate.Run(page, "URL"); err != nil {
+	// Invalid data
+}
 
-	if pass, err := validate.run(page, "Slug", "Author"); pass != true {
-		// Only the Slug and Author was validated
-	}
+// Only validate the Slug and Author fields
+if err := validate.Run(page, "Slug", "Author"); err != nil {
+	// Invalid data
+}
+```
 
 ## Built in validators
 
-- `NotZeroTime` - passes if the field is a non-zero Time
-- `NotEmpty` - passes if the field is a non-empty string
+All validatiors are available in their own package within `rules`. These are
+built in:
+
 - `Email` - passes if the field is a string with a valid email address
+- `Length:N` - passes if the field is a string with N characters
+- `MaxLength:N` - passes if the field is a string with at most N characters
+- `MinLength:N` - passes if the field is a string with at least N characters
+- `NotEmpty` - passes if the field is a non-empty string
+- `NotZeroTime` - passes if the field is a non-zero Time
 - `URL` - passes if the field is a string with a scheme and host
 - `UUID` - passes if the field is a string, []byte or []rune and is a valid UUID
-- `Length:N` - passes if the field is a string with N characters
-- `MinLength:N` - passes if the field is a string with at least N characters
-- `MaxLength:N` - passes if the field is a string with at most N characters
-- `GreaterThan:N` - passes if the field is an integer or float over N
+- `NotZero` - passes if the field is numeric and not-zer
+- `GreaterThan:N` - passes if the field is numeric and over N
+- `LessThan:N` - passes if the field is numeric and less than N
 
 ## Adding custom validators
 
-You can add custom validators to the validation library without
-extending/modifying it:
+Validators are built using interfaces. Even the built in ones. And adding a new
+one is easy peasy:
 
-	import (
-		"reflect"
-		validate "github.com/tonyhb/govalidate"
-	)
+```go
+package yourvalidator
 
-	func IsAwesome(v *validate.Validator) bool {
-		typ := reflect.TypeOf(v.Data)
-		if typ.Name() != "ExpectedType" {
-			v.Valid = false
-			v.Error = "Invalid type!"
-			return false
+import (
+	"github.com/tonyhb/govalidate/helper"
+	"github.com/tonyhb/govalidate/rules"
+)
+
+func init() {
+	// Register your validation tag with the validation method
+	rules.Add("TagName", ValidationMethod)
+}
+
+// This accepts a ValidationData struct, which contains the field name, value
+// and any arguments in the struct tag (such as '5' within MinLength:5)
+func ValidationMethod(data rules.ValidationData) (err error) {
+	// You'll need to typecast your data here
+	v, ok := helper.ToString(data.Value)
+	if ok != nil {
+		return rules.ErrInvalid{
+			ValidationData: data,
+			Failure:        "is not a string",
 		}
-
-		data = v.Data.(ExpectedType)
-		if data != "awesome" {
-			v.Valid = false
-			v.Error = "This is just not awesome enough"
-		}
-
-		v.Valid = true
-		return true
 	}
 
-	func main() {
-		validate.AddMethod("MaybeAwesome", IsAwesome)
-		// Now the tag `validate:"MaybeAwesome"` is valid.
+	// Add custom validation logic, returning an error if the field is invalid.
+	// rules.ErrInvalid has built in logic to make errors nicely formatted. It's
+	// optional.
+	if v == "" {
+		return rules.ErrInvalid{
+			ValidationData: data,
+			Failure:        "is empty",
+		}
 	}
 
-For the time being you need to explicitly set `v.Valid` in the validation
-method.
+	// Congratulate your user for not fucking with you.
+	return nil
+}
+```
 
 Extracted from https://keepupdated.co - originally built September 2013,
 maintained since then.
