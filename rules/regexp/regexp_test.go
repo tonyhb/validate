@@ -9,7 +9,7 @@ import (
 func TestRegexp(t *testing.T) {
 	object := rules.ValidationData{
 		Field: "Test",
-		Args:  []interface{}{"^[a-zA-Z]{3,5}[0-9]+$"},
+		Args:  []string{"/^[a-zA-Z]{3,5}[0-9]+$/"},
 	}
 
 	var valid = []interface{}{
