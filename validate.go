@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/tonyhb/govalidate/rules"
+	_ "github.com/tonyhb/govalidate/rules/alpha"
+	_ "github.com/tonyhb/govalidate/rules/alphanumeric"
 	_ "github.com/tonyhb/govalidate/rules/email"
 	_ "github.com/tonyhb/govalidate/rules/greaterthan"
 	_ "github.com/tonyhb/govalidate/rules/length"

@@ -44,6 +44,8 @@ if err := validate.Run(page, "Slug", "Author"); err != nil {
 All validatiors are available in their own package within `rules`. These are
 built in:
 
+- `Alpha` - passes if a string contains only alphabetic characters
+- `Alphanumeric` - passes if a string contains only alphanumeric characters
 - `Email` - passes if the field is a string with a valid email address
 - `Length:N` - passes if the field is a string with N characters
 - `MaxLength:N` - passes if the field is a string with at most N characters
@@ -52,7 +54,7 @@ built in:
 - `NotZeroTime` - passes if the field is a non-zero Time
 - `URL` - passes if the field is a string with a scheme and host
 - `UUID` - passes if the field is a string, []byte or []rune and is a valid UUID
-- `NotZero` - passes if the field is numeric and not-zer
+- `NotZero` - passes if the field is numeric and not-zero
 - `GreaterThan:N` - passes if the field is numeric and over N
 - `LessThan:N` - passes if the field is numeric and less than N
 
