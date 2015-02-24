@@ -418,6 +418,7 @@ func TestValidateURL(t *testing.T) {
 
 }
 
+// Tests a regexp sandwiched in the middle of two other validation rules
 func TestValidateRegexp(t *testing.T) {
 	var invalid = []interface{}{
 		1,
@@ -452,4 +453,16 @@ func TestValidateRegexp(t *testing.T) {
 		}
 	}
 
+}
+
+func TestWithPointer(t *testing.T) {
+	object := &struct {
+		Data interface{} `validate:"MinLength:1"`
+	}{
+		Data: "a",
+	}
+
+	if err := Run(object); err != nil {
+		t.Errorf("Unexpected error", err.Error())
+	}
 }

@@ -36,8 +36,14 @@ func Run(object interface{}, fieldsSlice ...string) error {
 		fields[field] = struct{}{}
 	}
 
-	// Iterate through each field of the struct and validate
+	// If we're passed a pointer to a struct we need to dereference the pointer before
+	// inspecting its tags
 	value := reflect.ValueOf(object)
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
+
+	// Iterate through each field of the struct and validate
 	typ := value.Type() // A Type's Field method returns StructFields
 	for i := 0; i < value.NumField(); i++ {
 		var validateTag string
