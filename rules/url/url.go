@@ -37,14 +37,14 @@ func URL(data rules.ValidationData) error {
 	if parsed.Scheme != "http" && parsed.Scheme != "https" {
 		return rules.ErrInvalid{
 			ValidationData: data,
-			Failure:        fmt.Sprintf("has an invalid scheme '%'", parsed.Scheme),
+			Failure:        fmt.Sprintf("has an invalid scheme '%s'", parsed.Scheme),
 		}
 	}
 
 	if parsed.Host == "" || strings.IndexRune(parsed.Host, '\\') > 0 {
 		return rules.ErrInvalid{
 			ValidationData: data,
-			Failure:        fmt.Sprintf("has an invalid host ('%')", parsed.Host),
+			Failure:        fmt.Sprintf("has an invalid host ('%s')", parsed.Host),
 		}
 	}
 
