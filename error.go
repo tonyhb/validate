@@ -16,7 +16,9 @@ type ValidationError struct {
 	//   }
 	//
 	// instead of ordering your ExpectedField slice in the same manner as
-	// returned by ValidationError
+	// returned by ValidationError.
+	//
+	// @see http://play.golang.org/p/MhB4tDJVCz
 	Fields map[string]struct{}
 }
 
