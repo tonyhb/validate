@@ -44,3 +44,17 @@ func (ve ValidationError) Error() string {
 func (ve ValidationError) Stringify() string {
 	return ve.Error()
 }
+
+// Merge validation errors together. This is used with recursion when validating
+// anonymous structs.
+func (ve *ValidationError) Merge(other ValidationError) {
+	for _, v := range other.Failures {
+		ve.Failures = append(ve.Failures, v)
+	}
+	for f, v := range other.Fields {
+		if ve.Fields == nil {
+			ve.Fields = map[string]struct{}{}
+		}
+		ve.Fields[f] = v
+	}
+}

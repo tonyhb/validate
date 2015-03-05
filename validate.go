@@ -49,6 +49,23 @@ func Run(object interface{}, fieldsSlice ...string) error {
 		var validateTag string
 		var validateError error
 
+		// Is this an anonymous struct? If so, we also need to validate on this.
+		if typ.Field(i).Anonymous == true {
+			if anonErr := Run(value.Field(i).Interface(), fieldsSlice...); anonErr != nil {
+				// The validation failed: set pass to false and merge the anonymous struct's
+				// validation errors with our current validation error above to give a complete
+				// error message.
+				pass = false
+
+				// A non validation error occurred: return this immediately
+				if _, ok := anonErr.(ValidationError); !ok {
+					return anonErr
+				}
+
+				err.Merge(anonErr.(ValidationError))
+			}
+		}
+
 		if len(fields) > 0 {
 			// We're only checking for a subset of fields; if this field isn't
 			// included in the subset of fields to validate we can skip.

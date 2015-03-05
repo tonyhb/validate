@@ -9,6 +9,40 @@ import (
 	"github.com/tonyhb/govalidate/rules"
 )
 
+type Anonymous struct {
+	Email string `validate:"NotEmpty"`
+}
+
+func TestAnonymousStructs(t *testing.T) {
+	object := struct {
+		Anonymous
+		Name string `validate:"NotEmpty"`
+	}{
+		Name: "",
+	}
+
+	err := Run(object)
+	if err == nil {
+		t.Fatalf("Expected Validate to validate anonymous fields")
+	}
+
+	vErr := err.(ValidationError)
+
+	// Validation errors should concatenate the struct and anonymous struct
+	// errors together
+	if len(vErr.Fields) != 2 {
+		t.Fatalf("Expected ValidationError to merge Anonymous Struct errors")
+	}
+
+	if _, ok := vErr.Fields["Name"]; !ok {
+		t.Fatalf("Expected ValidationError.Field to contain standard field names")
+	}
+
+	if _, ok := vErr.Fields["Email"]; !ok {
+		t.Fatalf("Expected ValidationError.Field to contain anonymous field names")
+	}
+}
+
 func TestNotEmpty(t *testing.T) {
 	var invalid = []interface{}{
 		1,

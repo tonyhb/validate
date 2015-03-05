@@ -2,7 +2,7 @@ Govalidate
 =========
 
 Simple, fast and *extensible* validation for Go structs, using tags in all their
-goodness.
+goodness. It also validates anonymous structs automatically.
 
 ## Basic usage
 
@@ -37,6 +37,29 @@ if err := validate.Run(page, "URL"); err != nil {
 // Only validate the Slug and Author fields
 if err := validate.Run(page, "Slug", "Author"); err != nil {
 	// Invalid data
+}
+```
+
+Validating anonymous structs:
+
+```go
+type Author struct {
+	Name  string `validate:"NotEmpty"`
+	Email string `validate:"Email"`
+}
+
+type Content struct {
+	Author
+	Body    string `validate:"NotEmpty"`
+}
+
+p := Content{Body: "foobar"}
+
+if err := validate.Run(p); err != nil {
+	// The validation library will validate all Content fields plus the anonymous
+ 	// Author field embedded within it.
+	// Because the Auther fields aren't set this will fail validation.
+	fmt.Println(err.Error())
 }
 ```
 
