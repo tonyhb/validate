@@ -1,0 +1,6 @@
+language: go
+sudo: false
+go:
+- 1.4
+script:
+- go test -v -short ./...
