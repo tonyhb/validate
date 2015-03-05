@@ -492,12 +492,8 @@ func TestValidateFields(t *testing.T) {
 		t.Fatal()
 	}
 
-	if vErr.Fields[0] != "Invalid" {
+	if _, ok := vErr.Fields["Invalid"]; !ok {
 		t.Fatal()
-	}
-
-	if vErr.Error() != "The following errors occured during validation: Field 'Invalid' is too short; it must be at least 10 characters long. " {
-		t.Fatalf("Unexpected error message: %s", vErr.Error())
 	}
 
 }

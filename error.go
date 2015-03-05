@@ -6,12 +6,28 @@ type ValidationError struct {
 	// Stores a list of fields that failed validation. This is useful
 	// during testing: you can assert that all validation rules are
 	// working as expected.
-	Fields []string
+	//
+	// This is a map because maps can be compared via reflect.DeepEqual even if
+	// its contents are ordered differently. Slices can not. This makes testing
+	// more reliable: you can do this:
+	//
+	//   if ! reflect.DeepEqual(ExpectedFields, err.Fields) {
+	//       t.Fatalf()
+	//   }
+	//
+	// instead of ordering your ExpectedField slice in the same manner as
+	// returned by ValidationError
+	Fields map[string]struct{}
 }
 
 func (ve *ValidationError) addFailure(field, msg string) {
 	ve.Failures = append(ve.Failures, msg)
-	ve.Fields = append(ve.Fields, field)
+
+	// Ensure we're not assigning to a nil map
+	if ve.Fields == nil {
+		ve.Fields = map[string]struct{}{}
+	}
+	ve.Fields[field] = struct{}{}
 }
 
 // Turn the slice of strings into one string.
