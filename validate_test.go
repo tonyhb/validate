@@ -1,5 +1,7 @@
 package validate
 
+// @TODO: Clean up the tests a bit
+
 import (
 	"testing"
 	"time"
@@ -465,4 +467,37 @@ func TestWithPointer(t *testing.T) {
 	if err := Run(object); err != nil {
 		t.Errorf("Unexpected error", err.Error())
 	}
+}
+
+func TestValidateFields(t *testing.T) {
+	object := &struct {
+		Invalid interface{} `validate:"MinLength:10"`
+		Valid   interface{} `validate:"NotEmpty"`
+	}{
+		Invalid: "a",
+		Valid:   "a",
+	}
+
+	err := Run(object)
+	if err == nil {
+		t.Fatal()
+	}
+
+	vErr, ok := err.(ValidationError)
+	if !ok {
+		t.Fatal()
+	}
+
+	if len(vErr.Fields) != 1 {
+		t.Fatal()
+	}
+
+	if vErr.Fields[0] != "Invalid" {
+		t.Fatal()
+	}
+
+	if vErr.Error() != "The following errors occured during validation: Field 'Invalid' is too short; it must be at least 10 characters long. " {
+		t.Fatalf("Unexpected error message: %s", vErr.Error())
+	}
+
 }

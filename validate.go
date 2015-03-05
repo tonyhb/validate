@@ -66,12 +66,14 @@ func Run(object interface{}, fieldsSlice ...string) error {
 			continue
 		}
 
+		// If there was no validation rule defined for the given tag return
+		// that error immediately.
 		if _, ok := validateError.(rules.ErrNoValidationMethod); ok {
 			return validateError
 		}
 
 		pass = false
-		err.addFailure(validateError.Error())
+		err.addFailure(typ.Field(i).Name, validateError.Error())
 	}
 
 	if pass {

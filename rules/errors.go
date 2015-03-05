@@ -8,7 +8,7 @@ type ErrInvalid struct {
 }
 
 func (t ErrInvalid) Error() string {
-	return fmt.Sprintf("Field '%s' '%s'", t.Field, t.Failure)
+	return fmt.Sprintf("Field '%s' %s", t.Field, t.Failure)
 }
 
 type ErrNoValidationMethod struct {
