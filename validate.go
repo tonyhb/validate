@@ -23,7 +23,8 @@ import (
 )
 
 // Takes a struct, loops through all fields and calls check on any fields that
-// have a validate tag.
+// have a validate tag. If the field is an anonymous struct recursively run
+// validation on it.
 func Run(object interface{}, fieldsSlice ...string) error {
 	pass := true // We'll override this if checking returns false
 	err := ValidationError{}
