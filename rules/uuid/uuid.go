@@ -22,10 +22,7 @@ func UUID(data rules.ValidationData) error {
 		}
 	}
 
-	var hexPattern = "^(urn\\:uuid\\:)?\\{?([a-z0-9]{8})-([a-z0-9]{4})-([1-5][a-z0-9]{3})-([a-z0-9]{4})-([a-z0-9]{12})\\}?$"
-	re := regexp.MustCompile(hexPattern)
-
-	if match := re.FindStringSubmatch(v); match == nil {
+	if !IsUUID(v) {
 		return rules.ErrInvalid{
 			ValidationData: data,
 			Failure:        "is an invalid UUID",
@@ -33,4 +30,14 @@ func UUID(data rules.ValidationData) error {
 	}
 
 	return nil
+}
+
+func IsUUID(uuid string) bool {
+	var hexPattern = "^(urn\\:uuid\\:)?\\{?([a-z0-9]{8})-([a-z0-9]{4})-([1-5][a-z0-9]{3})-([a-z0-9]{4})-([a-z0-9]{12})\\}?$"
+	re := regexp.MustCompile(hexPattern)
+
+	if match := re.FindStringSubmatch(uuid); match == nil {
+		return false
+	}
+	return true
 }
