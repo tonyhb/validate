@@ -20,7 +20,7 @@ func Email(data rules.ValidationData) (err error) {
 		}
 	}
 
-	if regexp.MustCompile(`(?i)[A-Z0-9!#$%&'*+/=?^_{|}~-]+(?:\.[A-Z0-9!#$%&'*+/=?^_{|}~-]+)*@(?:[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?\.)+[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?`).MatchString(v) {
+	if IsEmail(v) {
 		return
 	}
 
@@ -28,4 +28,8 @@ func Email(data rules.ValidationData) (err error) {
 		ValidationData: data,
 		Failure:        "is not a valid email address",
 	}
+}
+
+func IsEmail(str string) bool {
+	return regexp.MustCompile(`(?i)[A-Z0-9!#$%&'*+/=?^_{|}~-]+(?:\.[A-Z0-9!#$%&'*+/=?^_{|}~-]+)*@(?:[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?\.)+[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?`).MatchString(str)
 }
