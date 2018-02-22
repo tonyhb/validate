@@ -76,6 +76,11 @@ if err := validate.Run(p); err != nil {
  	// Author field embedded within it.
 	// Because the Auther fields aren't set this will fail validation.
 	fmt.Println(err.Error())
+	fmt.Printf("%#v\n", err)
+
+	// Output:
+	// The following errors occured during validation: Field 'Name' is empty. Field 'Email' is not a valid email address.
+	// validate.ValidationError{Failures:[]string{"Field 'Name' is empty", "Field 'Email' is not a valid email address"}, Fields:map[string]struct {}{"Email":struct {}{}, "Name":struct {}{}}}
 }
 ```
 
