@@ -155,57 +155,62 @@ You can test that validation rules are working as expected:
 
 ```go
 type User struct {
-	Name string `validate:"NotEmpty"`
+	Name  string `validate:"NotEmpty"`
 	Email string `validate:"NotEmpty"`
 }
 
 func TestUserValidation(t *testing.T) {
 
-    tests := []struct {
-        User   *User
-        Valid  bool
-        Fields map[string]struct{}
-    }{
+	tests := []struct {
+		User   *User
+		Valid  bool
+		Fields map[string]struct{}
+	}{
 		// In this test we expect both the Name and Email fields to fail validation:
 		// we're passing an empty User object into validation
-        {
-            User:  &User{},
-            Valid: false,
+		{
+			User:  &User{},
+			Valid: false,
 			// These fields should be present in ValidationError.Fields as failures
-            Fields: map[string]struct{}{
-                "Name":        struct{}{},
-                "Email":        struct{}{},
-            },
-        },
-    }
+			// This is a map with meaningless empty values, rather than a slice,
+			// so you can do O(1) lookups and compare them using reflect.DeepEqual
+			// without caring about the order in which fields will appear
+			Fields: map[string]struct{}{
+				"Name":  struct{}{},
+				"Email": struct{}{},
+			},
+		},
+	}
 
-    for _, v := range tests {
-        err := validate.Run(v.User)
+	for _, v := range tests {
+		err := validate.Run(v.User)
 
-        if v.Valid && err != nil {
-            t.Fatalf("Unexpected validation error: %s", err)
-        }
+		if v.Valid && err != nil {
+			t.Fatalf("Unexpected validation error: %s", err)
+		}
 
-        if !v.Valid && err == nil {
-            t.Fatal("Expected validation error")
-        }
+		if !v.Valid && err == nil {
+			t.Fatal("Expected validation error")
+		}
 
 		// Check that the fields were validated as we expect
-        if !v.Valid && err != nil {
+		if !v.Valid && err != nil {
 			// Ensure we were passed a ValidationError:
-			// if a validaiton method wasn't present this error will
+			// if a validation method wasn't present this error will
 			// be of some other type.
-            vErr, ok := err.(validate.ValidationError)
-            if !ok {
-                t.Fatalf(err.Error())
-            }
+			vErr, ok := err.(validate.ValidationError)
+			if !ok {
+				t.Fatalf(err.Error())
+			}
 
 			// Check the failed fields matches what we expect
-            if len(v.Fields) > 0 && !reflect.DeepEqual(v.Fields, vErr.Fields) {
-                t.Fatal()
-            }
-        }
-    }
+			// These are mostly useful for tests
+			// If you want readable validation messages, you can look at vErr.Failures
+			if len(v.Fields) > 0 && !reflect.DeepEqual(v.Fields, vErr.Fields) {
+				t.Fatal()
+			}
+		}
+	}
 }
 ```
 
