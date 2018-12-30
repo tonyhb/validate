@@ -3,7 +3,7 @@ package notzerotime
 import (
 	"time"
 
-	"github.com/tonyhb/govalidate/rules"
+	"github.com/vizualni/govalidate/rules"
 )
 
 func init() {

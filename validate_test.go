@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tonyhb/govalidate/rules"
+	"github.com/vizualni/govalidate/rules"
 )
 
 type Anonymous struct {

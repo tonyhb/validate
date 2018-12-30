@@ -3,7 +3,7 @@ package regexp
 import (
 	"testing"
 
-	"github.com/tonyhb/govalidate/rules"
+	"github.com/vizualni/govalidate/rules"
 )
 
 func TestRegexp(t *testing.T) {

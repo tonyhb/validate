@@ -2,14 +2,14 @@ Govalidate
 =========
 
 [![Build Status](https://travis-ci.org/tonyhb/govalidate.svg?branch=master)](https://travis-ci.org/tonyhb/govalidate)
-[![GoDoc](https://godoc.org/github.com/tonyhb/govalidate?status.svg)](https://godoc.org/github.com/tonyhb/govalidate)
+[![GoDoc](https://godoc.org/github.com/vizualni/govalidate?status.svg)](https://godoc.org/github.com/vizualni/govalidate)
 
 Simple, fast and *extensible* validation for Go structs, using tags in all their
 goodness. It also validates anonymous structs automatically.
 
 ```
-GoCode   import github.com/tonyhb/govalidate
-CLI      go get -u github.com/tonyhb/govalidate
+GoCode   import github.com/vizualni/govalidate
+CLI      go get -u github.com/vizualni/govalidate
 ```
 
 ## Basic usage
@@ -19,7 +19,7 @@ Here's how to set up your struct:
 ```go
 package main
 
-import "github.com/tonyhb/govalidate"
+import "github.com/vizualni/govalidate"
 
 type Page struct {
 	UUID   string `validate:"NotEmpty,UUID"`
@@ -57,7 +57,7 @@ Validating anonymous structs:
 ```go
 package main
 
-import "github.com/tonyhb/govalidate"
+import "github.com/vizualni/govalidate"
 
 type Author struct {
 	Name  string `validate:"NotEmpty"`
@@ -113,8 +113,8 @@ one is easy peasy:
 package yourvalidator
 
 import (
-	"github.com/tonyhb/govalidate/helper"
-	"github.com/tonyhb/govalidate/rules"
+	"github.com/vizualni/govalidate/helper"
+	"github.com/vizualni/govalidate/rules"
 )
 
 func init() {

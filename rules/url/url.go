@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/tonyhb/govalidate/helper"
-	"github.com/tonyhb/govalidate/rules"
+	"github.com/vizualni/govalidate/helper"
+	"github.com/vizualni/govalidate/rules"
 )
 
 func init() {

@@ -3,7 +3,7 @@ package notempty
 import (
 	"testing"
 
-	"github.com/tonyhb/govalidate/rules"
+	"github.com/vizualni/govalidate/rules"
 )
 
 func TestNotEmpty(t *testing.T) {
