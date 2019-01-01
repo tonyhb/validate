@@ -25,6 +25,10 @@ type ValidationData struct {
 	//
 	// Unfortunately, due to the nature of tags these will always be strings.
 	Args []string
+
+	// Code to return in case of an error. Used to match the validation error
+	// a specific message code.
+	Code string
 }
 
 // All validation methods must return an ErrInvalid error type if the data

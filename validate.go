@@ -90,8 +90,12 @@ func Run(object interface{}, fieldsSlice ...string) error {
 			return validateError
 		}
 
+		var code string
+		if e, ok := validateError.(rules.ErrInvalid); ok {
+			code = e.Code
+		}
 		pass = false
-		err.addFailure(typ.Field(i).Name, validateError.Error())
+		err.addFailure(typ.Field(i).Name, code, validateError.Error())
 	}
 
 	if pass {
@@ -166,6 +170,13 @@ func validateRule(data interface{}, fieldName, rule string) error {
 		args = append(args, arg)
 	}
 
+	i1, i2 := strings.Index(rule, "("), strings.Index(rule, ")")
+	var code string
+
+	if i1 > -1 && i2 > -1 {
+		rule, code = rule[:i1], rule[i1+1: i2]
+	}
+
 	// Attempt to validate the data using methods registered with the rules
 	// sub package
 	if method, err := rules.Get(rule); err != nil {
@@ -175,6 +186,7 @@ func validateRule(data interface{}, fieldName, rule string) error {
 			Field: fieldName,
 			Value: data,
 			Args:  args,
+			Code:  code,
 		}
 		return method(data)
 	}

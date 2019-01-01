@@ -24,10 +24,10 @@ type ValidationError struct {
 	// A map that stores field with the corresponding error messages
 	// This is added as a transation period not to break anybody's
 	// current implementation.
-	FieldFailures map[string][]string
+	FieldFailures map[string] map[string][]string
 }
 
-func (ve *ValidationError) addFailure(field, msg string) {
+func (ve *ValidationError) addFailure(field, code, msg string) {
 	ve.Failures = append(ve.Failures, msg)
 
 	// Ensure we're not assigning to a nil map
@@ -37,10 +37,14 @@ func (ve *ValidationError) addFailure(field, msg string) {
 	ve.Fields[field] = struct{}{}
 
 	if ve.FieldFailures == nil {
-		ve.FieldFailures = make(map[string][]string)
+		ve.FieldFailures = make(map[string]map[string][]string)
 	}
 
-	ve.FieldFailures[field] = append(ve.FieldFailures[field], msg)
+	if ve.FieldFailures[field] == nil {
+		ve.FieldFailures[field] = make(map[string][]string)
+	}
+
+	ve.FieldFailures[field][code] = append(ve.FieldFailures[field][code], msg)
 }
 
 // Turn the slice of strings into one string.
@@ -67,15 +71,20 @@ func (ve *ValidationError) Merge(other ValidationError) {
 			ve.Fields = map[string]struct{}{}
 		}
 		ve.Fields[f] = v
+
 	}
 
 	if ve.FieldFailures == nil {
-		ve.FieldFailures = make(map[string][]string)
+		ve.FieldFailures = make(map[string]map[string][]string)
 	}
 
-	for f, v := range other.FieldFailures {
-		for _, msg := range v {
-			ve.FieldFailures[f] = append(ve.FieldFailures[f], msg)
+	for f := range other.FieldFailures {
+		if ve.FieldFailures[f] == nil {
+			ve.FieldFailures[f] = make(map[string][]string)
+		}
+
+		for c := range other.FieldFailures[f] {
+			ve.FieldFailures[f][c] = append(ve.FieldFailures[f][c], other.FieldFailures[f][c]...)
 		}
 	}
 }

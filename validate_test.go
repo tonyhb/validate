@@ -499,7 +499,7 @@ func TestWithPointer(t *testing.T) {
 	}
 
 	if err := Run(object); err != nil {
-		t.Errorf("Unexpected error", err.Error())
+		t.Errorf("Unexpected error: %s", err.Error())
 	}
 }
 
@@ -530,4 +530,47 @@ func TestValidateFields(t *testing.T) {
 		t.Fatal()
 	}
 
+}
+
+func TestTheFieldCode(t *testing.T) {
+	object := &struct {
+		Invalid interface{} `validate:"MinLength(minlen):10"`
+		Valid   interface{} `validate:"NotEmpty"`
+	}{
+		Invalid: "a",
+		Valid:   "a",
+	}
+
+	err := Run(object)
+	if err == nil {
+		t.Fatal()
+	}
+
+	vErr, ok := err.(ValidationError)
+	if !ok {
+		t.Fatal()
+	}
+
+	if len(vErr.Fields) != 1 {
+		t.Fatal()
+	}
+
+	if _, ok := vErr.Fields["Invalid"]; !ok {
+		t.Fatal()
+	}
+
+	for field := range vErr.FieldFailures {
+		for code := range vErr.FieldFailures[field] {
+			switch field {
+			case "Invalid":
+				if code != "minlen" {
+					t.Error("expected minlen to be the code for the Invalid field")
+				}
+			case "NotEmpty":
+				if code != "" {
+					t.Error("expected code to be empty string")
+				}
+			}
+		}
+	}
 }
